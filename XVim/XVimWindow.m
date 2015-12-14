@@ -33,9 +33,12 @@
 	NSString           *_staticString;
     IDEEditorArea      *_editorArea;
     NSTextInputContext *_inputContext;
+    NSColor            *_caretColor;
 }
 
 @property (strong, atomic) NSEvent       *tmpBuffer;
+
+@property (readonly, atomic) NSColor *caretColor;
 
 - (void)_resetEvaluatorStack:(NSMutableArray *)stack activateNormalHandler:(BOOL)activate;
 
@@ -382,9 +385,19 @@
     return (IDEWorkspaceWindow *)[self.sourceView window];
 }
 
+-(NSColor *) caretColor {
+    if (_caretColor == nil) {
+        _caretColor = [DVTTextAnnotationTheme _caretColor];
+    }
+    return _caretColor;
+}
+
 - (void)setForcusBackToSourceView
 {
     [[self currentWorkspaceWindow] makeFirstResponder:self.sourceView];
+    if ([self.sourceView respondsToSelector:@selector(setInsertionPointColor:)]) {
+        [self.sourceView setInsertionPointColor:self.caretColor];
+    }
 }
 
 
